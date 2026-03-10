@@ -4,15 +4,27 @@
       <!-- Header -->
       <div class="section-header animate-fade-up">
         <span class="section-label">Catálogo de Productos</span>
-        <h2 class="section-title">Equipos <span>Clínicos Certificados</span></h2>
+        <h2 class="section-title">Nuestros <span>Productos</span></h2>
         <p class="section-desc">
-          Soluciones de diagnóstico de alta precisión para todas las especialidades médicas.
-          Cada equipo respaldado con garantía y soporte técnico certificado.
+          Contamos con una amplia variedad de productos de diferentes gamas para satisfacer las necesidades de cada uno de nuestros clientes generando ahorros considerables.
         </p>
       </div>
 
-      <!-- Filter tabs -->
-      <div class="filter-tabs animate-fade-up delay-1">
+      <!-- Buscador -->
+      <div class="search-bar animate-fade-up delay-1">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input 
+            type="text" 
+            v-model="searchQuery" 
+            placeholder="Buscar productos por nombre o marca..." 
+            class="search-input"
+          />
+        </div>
+      </div>
+
+      <!-- Categorías (Pills) -->
+      <div class="filter-tabs animate-fade-up delay-2">
         <button
           v-for="cat in categories"
           :key="cat"
@@ -26,24 +38,45 @@
       <div class="products-grid">
         <div
           v-for="(product, i) in filteredProducts"
-          :key="product.name"
+          :key="product.id"
           class="product-card animate-fade-up"
-          :class="`delay-${(i % 4) + 1}`">
-          <div class="card-badge" v-if="product.badge">{{ product.badge }}</div>
-          <div class="product-icon" :style="{ background: product.gradient }">
-            <span v-html="product.icon"></span>
+          :class="`delay-${(i % 4) + 1}`"
+        >
+          <div class="product-hex-wrapper">
+            <!-- Fondo hexagonal -->
+            <div class="hex-bg"></div>
+            <!-- Imagen del producto (placeholder) -->
+            <img :src="product.image" :alt="product.name" class="product-img" />
           </div>
-          <div class="product-tag">{{ product.category }}</div>
-          <h3 class="product-name">{{ product.name }}</h3>
-          <p class="product-desc">{{ product.desc }}</p>
-          <div class="product-features">
-            <span v-for="feat in product.features" :key="feat" class="feat-tag">{{ feat }}</span>
-          </div>
-          <div class="product-footer">
-            <a href="#contacto" class="product-cta">Solicitar cotización →</a>
+          
+          <div class="product-info">
+            <div class="product-meta">
+              <span class="product-tag">{{ product.category }}</span>
+              <span class="brand-tag">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                {{ product.brand }}
+              </span>
+            </div>
+            
+            <h3 class="product-name">{{ product.name }}</h3>
+            
+            <!-- Brand CTA -->
+            <a :href="getWhatsappLink(product.name)" target="_blank" rel="noopener noreferrer" class="btn-brand">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              Me interesa
+            </a>
           </div>
         </div>
       </div>
+
+      <!-- No results state -->
+      <div v-if="filteredProducts.length === 0" class="no-results animate-fade-up">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+        <h3>No se encontraron productos</h3>
+        <p>Intenta con otra búsqueda o categoría.</p>
+        <button class="btn-primary" @click="resetFilters" style="margin-top:16px">Ver todos los productos</button>
+      </div>
+
     </div>
   </section>
 </template>
@@ -51,94 +84,89 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-const categories = ['Todos', 'Diagnóstico', 'Monitoreo', 'Laboratorio', 'Imagenología']
-const activeCategory = ref('Todos')
+const categories = [
+  'Todos', 
+  'Detectores Flat Panel', 
+  'Digitalizadores', 
+  'Impresoras', 
+  'Consumibles',
+  'Pantallas y Cassettes',
+  'Equipos de Rayos X'
+]
 
-const products = [
-  {
-    name: 'Electrocardiografo Digital ECG-12',
-    category: 'Diagnóstico',
-    gradient: 'linear-gradient(135deg,#ff6b6b22,#ff6b6b11)',
-    icon: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
-    desc: 'Electrocardiografo de 12 derivaciones con pantalla táctil y conectividad Wi-Fi. Análisis automático de ritmo cardíaco e interpretación de arritmias.',
-    features: ['12 derivaciones', 'Wi-Fi/Bluetooth', 'Batería 8h'],
-    badge: 'Más Vendido',
-  },
-  {
-    name: 'Monitor de Signos Vitales MSV-Pro',
-    category: 'Monitoreo',
-    gradient: 'linear-gradient(135deg,#EF880722,#EF880711)',
-    icon: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#EF8807" stroke-width="1.5" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
-    desc: 'Monitor multiparamétrico portátil. Registra FC, SpO₂, NIBP, temperatura y respiración en tiempo real con alarmas configurables.',
-    features: ['SpO₂', 'NIBP', 'Temperatura'],
-    badge: null,
-  },
-  {
-    name: 'Analizador Hematológico AH-5000',
-    category: 'Laboratorio',
-    gradient: 'linear-gradient(135deg,#7c3aed22,#7c3aed11)',
-    icon: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.5"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 9H10v5"/></svg>',
-    desc: 'Contador hematológico de 5 partes con reactivos avanzados. Procesa hasta 60 muestras por hora con precisión de clase A.',
-    features: ['60 muestras/h', '5 partes', 'Reactivos integrados'],
-    badge: 'Nuevo',
-  },
-  {
-    name: 'Ecógrafo Portátil EcoScan-UHD',
-    category: 'Imagenología',
-    gradient: 'linear-gradient(135deg,#0891b222,#0891b211)',
-    icon: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
-    desc: 'Ecógrafo de mano con transductor de alta frecuencia. Imagen UHD en tiempo real con modos B, M, Doppler color y doppler espectral.',
-    features: ['Doppler color', 'Portátil', '8h batería'],
-    badge: null,
-  },
-  {
-    name: 'Tensiómetro Digital TD-PRO',
-    category: 'Diagnóstico',
-    gradient: 'linear-gradient(135deg,#16a34a22,#16a34a11)',
-    icon: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
-    desc: 'Monitor de presión arterial de brazo con pantalla LCD grande. Detección de arritmias, indicador de posición y memoria para 2 usuarios.',
-    features: ['Detección arritmias', '60 memorias', 'Bluetooth'],
-    badge: null,
-  },
-  {
-    name: 'Oxímetro de Pulso OX-Smart',
-    category: 'Monitoreo',
-    gradient: 'linear-gradient(135deg,#f59e0b22,#f59e0b11)',
-    icon: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
-    desc: 'Oxímetro de pulso con pantalla OLED y alarmas audibles. Medición continua de SpO₂ y frecuencia cardíaca con carga USB-C.',
-    features: ['OLED', 'Alarmas', 'USB-C'],
-    badge: null,
-  },
-  {
-    name: 'Glucómetro Profesional GL-PRO',
-    category: 'Laboratorio',
-    gradient: 'linear-gradient(135deg,#dc262622,#dc262611)',
-    icon: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.5"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>',
-    desc: 'Sistema de monitoreo glucémico profesional con tiras reactivas de alta precisión. Calibración automática y conectividad con EMR.',
-    features: ['Calibración auto', 'Integración EMR', '500 memorias'],
-    badge: null,
-  },
-  {
-    name: 'Rayos X Digital RX-Vision',
-    category: 'Imagenología',
-    gradient: 'linear-gradient(135deg,#64748b22,#64748b11)',
-    icon: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>',
-    desc: 'Sistema de radiografía digital con detector de panel plano. Imagen de alta resolución con dosis reducida al paciente hasta un 80%.',
-    features: ['Alta resolución', '-80% radiación', 'DICOM'],
-    badge: 'Premium',
-  },
+const activeCategory = ref('Todos')
+const searchQuery = ref('')
+
+const productsData = [
+  // Detectores Flat Panel
+  { id: 1, name: 'Flat Panel CareRay 750M', category: 'Detectores Flat Panel', brand: 'CareRay', image: '/canis.png' },
+  { id: 2, name: 'Flat Panel CareView 1800CW', category: 'Detectores Flat Panel', brand: 'CareView', image: '/canis.png' },
+  { id: 3, name: 'Flat Panel Mammo T1012', category: 'Detectores Flat Panel', brand: 'Mammo', image: '/canis.png' },
+  { id: 4, name: 'Flat Panel Focus 35C', category: 'Detectores Flat Panel', brand: 'Focus', image: '/canis.png' },
+  
+  // Digitalizadores
+  { id: 5, name: 'Vita Flex CR', category: 'Digitalizadores', brand: 'Vita', image: '/canis.png' },
+  { id: 6, name: 'Classic & Elite CR', category: 'Digitalizadores', brand: 'Carestream', image: '/canis.png' },
+  { id: 7, name: 'CR Carbon XL', category: 'Digitalizadores', brand: 'Carestream', image: '/canis.png' },
+  { id: 8, name: 'CR3', category: 'Digitalizadores', brand: 'No especificada', image: '/canis.png' },
+  
+  // Impresoras
+  { id: 9, name: 'Impresora Térmica EMDY003', category: 'Impresoras', brand: 'No especificada', image: '/canis.png' },
+  { id: 10, name: 'Impresora Drypix Lite', category: 'Impresoras', brand: 'Fujifilm', image: '/canis.png' },
+  { id: 11, name: 'Impresora Láser DV5700', category: 'Impresoras', brand: 'No especificada', image: '/canis.png' },
+  
+  // Consumibles
+  { id: 12, name: 'Película Térmica EMDF', category: 'Consumibles', brand: 'No especificada', image: '/canis.png' },
+  { id: 13, name: 'Película Fujifilm DI-HT', category: 'Consumibles', brand: 'Fujifilm', image: '/canis.png' },
+  { id: 14, name: 'Película DryView DVE', category: 'Consumibles', brand: 'Carestream', image: '/canis.png' },
+  { id: 15, name: 'Guante de Nitrilo FOREAL', category: 'Consumibles', brand: 'FOREAL', image: '/canis.png' },
+  
+  // Pantallas y Cassettes
+  { id: 16, name: 'Cassettes CR Vita-Flex', category: 'Pantallas y Cassettes', brand: 'Vita', image: '/canis.png' },
+  { id: 17, name: 'Cassettes CR Classic / Elite / 975', category: 'Pantallas y Cassettes', brand: 'Carestream', image: '/canis.png' },
+  
+  // Equipos de Rayos X
+  { id: 18, name: 'Portátil JOB HF100', category: 'Equipos de Rayos X', brand: 'JOB', image: '/canis.png' },
+  { id: 19, name: 'Sala GXR-S 500mA', category: 'Equipos de Rayos X', brand: 'No especificada', image: '/canis.png' },
+  { id: 20, name: 'Portátil EMGX53 (5.3 kW)', category: 'Equipos de Rayos X', brand: 'EMG', image: '/canis.png' },
+  { id: 21, name: 'Portátil EMGX100 (10 kW)', category: 'Equipos de Rayos X', brand: 'EMG', image: '/canis.png' },
 ]
 
 const filteredProducts = computed(() => {
-  if (activeCategory.value === 'Todos') return products
-  return products.filter(p => p.category === activeCategory.value)
+  let filtered = productsData
+
+  if (activeCategory.value !== 'Todos') {
+    filtered = filtered.filter(p => p.category === activeCategory.value)
+  }
+
+  if (searchQuery.value.trim() !== '') {
+    const q = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(p => 
+      p.name.toLowerCase().includes(q) || 
+      p.brand.toLowerCase().includes(q)
+    )
+  }
+
+  return filtered
 })
+
+const resetFilters = () => {
+  activeCategory.value = 'Todos'
+  searchQuery.value = ''
+}
+
+const getWhatsappLink = (productName) => {
+  const phone = '521234567890' // Teléfono de contingencia genérico
+  const message = `Hola, me interesa obtener más información sobre el producto de su catálogo web: *${productName}*.`
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+}
 </script>
 
 <style scoped>
 .products {
   padding: var(--section-pad);
   background: var(--off-white);
+  min-height: 100vh;
 }
 
 .section-header {
@@ -148,9 +176,52 @@ const filteredProducts = computed(() => {
 
 .section-header .section-desc {
   margin: 0 auto;
+  max-width: 650px;
+  font-size: 1.1rem;
 }
 
-/* Filter tabs */
+/* Search Bar */
+.search-bar {
+  max-width: 600px;
+  margin: 0 auto 32px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 18px;
+  color: var(--gray-400);
+}
+
+.search-input {
+  width: 100%;
+  padding: 16px 20px 16px 50px;
+  font-family: var(--font);
+  font-size: 1rem;
+  color: var(--gray-800);
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 100px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(239, 136, 7, 0.1);
+}
+
+.search-input::placeholder {
+  color: var(--gray-400);
+}
+
+/* Filter tabs (Pills) */
 .filter-tabs {
   display: flex;
   justify-content: center;
@@ -172,116 +243,152 @@ const filteredProducts = computed(() => {
   transition: var(--transition);
 }
 
-.tab-btn:hover    { border-color: var(--accent); color: var(--accent); }
-.tab-btn.active   { background: var(--primary); border-color: var(--primary); color: var(--white); }
+.tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tab-btn.active { background: var(--primary); border-color: var(--primary); color: var(--white); }
 
 /* Grid */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  gap: 32px;
 }
 
 .product-card {
-  position: relative;
   background: var(--white);
   border-radius: var(--radius-lg);
   border: 1px solid var(--gray-200);
-  padding: 28px;
+  padding: 24px;
   transition: var(--transition);
-  overflow: hidden;
-}
-
-.product-card::before {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent), #7FFFD4);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-5px);
   box-shadow: var(--shadow-lg);
-  border-color: transparent;
+  border-color: rgba(239, 136, 7, 0.4);
 }
 
-.product-card:hover::before { transform: scaleX(1); }
-
-.card-badge {
-  position: absolute;
-  top: 20px; right: 20px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--white);
-  background: var(--accent);
-  padding: 4px 10px;
-  border-radius: 100px;
-}
-
-.product-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: var(--radius);
+/* Hexagon Image Wrapper */
+.product-hex-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.hex-bg {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  background: rgba(239, 136, 7, 0.08); /* Fondo Naranja Brand super clarito */
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  transition: transform 0.4s ease;
+  z-index: 1;
+}
+
+.product-card:hover .hex-bg {
+  transform: scale(1.05) rotate(5deg);
+  background: rgba(239, 136, 7, 0.15);
+}
+
+.product-img {
+  position: relative;
+  z-index: 2;
+  width: 65%;
+  height: 65%;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+}
+
+.product-card:hover .product-img {
+  transform: scale(1.1);
+}
+
+/* Info */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 .product-tag {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 8px;
+}
+
+.brand-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  background: var(--gray-100);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .product-name {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--primary);
-  margin-bottom: 10px;
+  margin-bottom: 24px;
   line-height: 1.3;
+  flex-grow: 1;
 }
 
-.product-desc {
-  font-size: 0.83rem;
-  color: var(--gray-600);
-  line-height: 1.6;
-  margin-bottom: 16px;
-}
-
-.product-features {
+/* Brand CTA Button */
+.btn-brand {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 20px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--primary); /* Color Naranja Brand */
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 12px 0;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
 }
 
-.feat-tag {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--primary);
-  background: var(--gray-100);
-  padding: 4px 10px;
-  border-radius: 100px;
+.btn-brand:hover {
+  background: var(--accent); /* Naranja más brillante al pasar el ratón */
+  transform: translateY(-2px);
 }
 
-.product-footer { border-top: 1px solid var(--gray-100); padding-top: 16px; }
-
-.product-cta {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--accent);
-  transition: gap 0.2s;
+/* Zero state */
+.no-results {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--gray-500);
 }
 
-.product-cta:hover { color: var(--accent-dark); }
+.no-results svg {
+  margin-bottom: 16px;
+  color: var(--gray-400);
+}
+
+.no-results h3 {
+  font-size: 1.25rem;
+  color: var(--gray-800);
+  margin-bottom: 8px;
+}
 
 @media (max-width: 600px) {
   .products-grid { grid-template-columns: 1fr; }
