@@ -1,5 +1,6 @@
 <template>
   <div id="bme-app">
+    <HealthProfessionalModal />
     <NavBar />
 
     <main class="page-content">
@@ -25,6 +26,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import NavBar from './components/NavBar.vue'
 import FooterSection from './components/FooterSection.vue'
+import HealthProfessionalModal from './components/HealthProfessionalModal.vue'
 
 const rotation = ref(0)
 let ticking = false
