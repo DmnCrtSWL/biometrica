@@ -1,25 +1,36 @@
 <template>
   <header :class="['navbar', { scrolled: isScrolled }]">
-    <div class="container nav-inner">
+    <div class="nav-inner">
       <!-- Logo -->
       <router-link to="/" class="nav-logo">
-        <img src="/logo.svg" alt="BME Biométrica Especializada" class="nav-logo-img" />
+        <img
+          src="/logo.png"
+          alt="BME Biomédica Especializada"
+          class="nav-logo-img"
+        />
       </router-link>
 
       <!-- Desktop Nav -->
       <nav class="nav-links">
-        <router-link v-for="(item, i) in navItems" :key="i" :to="item.to" class="nav-link">
+        <router-link
+          v-for="(item, i) in navItems"
+          :key="i"
+          :to="item.to"
+          class="nav-link"
+        >
           {{ item.label }}
         </router-link>
       </nav>
 
       <!-- CTA -->
-      <router-link to="/contacto" class="btn-cta">
-        Contáctanos
-      </router-link>
+      <router-link to="/contacto" class="btn-cta"> Contáctanos </router-link>
 
       <!-- Mobile Toggle -->
-      <button class="menu-toggle" @click="menuOpen = !menuOpen" aria-label="Menú">
+      <button
+        class="menu-toggle"
+        @click="menuOpen = !menuOpen"
+        aria-label="Menú"
+      >
         <span :class="['bar', { open: menuOpen }]"></span>
         <span :class="['bar', { open: menuOpen }]"></span>
         <span :class="['bar', { open: menuOpen }]"></span>
@@ -28,11 +39,21 @@
 
     <!-- Mobile Menu -->
     <div :class="['mobile-menu', { open: menuOpen }]">
-      <router-link v-for="(item, i) in navItems" :key="i" :to="item.to"
-         class="mobile-link" @click="menuOpen = false">
+      <router-link
+        v-for="(item, i) in navItems"
+        :key="i"
+        :to="item.to"
+        class="mobile-link"
+        @click="menuOpen = false"
+      >
         {{ item.label }}
       </router-link>
-      <router-link to="/contacto" class="btn-primary" @click="menuOpen = false" style="margin-top:8px">
+      <router-link
+        to="/contacto"
+        class="btn-primary"
+        @click="menuOpen = false"
+        style="margin-top: 8px"
+      >
         Contáctanos
       </router-link>
     </div>
@@ -40,24 +61,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from "vue";
 
-const isScrolled = ref(false)
-const menuOpen = ref(false)
+const isScrolled = ref(false);
+const menuOpen = ref(false);
 
 const navItems = [
-  { label: 'Inicio',    to: '/' },
-  { label: 'Nosotros',  to: '/nosotros' },
-  { label: 'Tienda',    to: '/tienda' },
-  { label: 'Servicios', to: '/servicios' },
-]
+  { label: "Inicio", to: "/" },
+  { label: "Nosotros", to: "/nosotros" },
+  { label: "Tienda", to: "/tienda" },
+  { label: "Servicios", to: "/servicios" },
+];
 
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 40
-}
+  isScrolled.value = window.scrollY > 40;
+};
 
-onMounted(() => window.addEventListener('scroll', handleScroll))
-onUnmounted(() => window.removeEventListener('scroll', handleScroll))
+onMounted(() => window.addEventListener("scroll", handleScroll));
+onUnmounted(() => window.removeEventListener("scroll", handleScroll));
 </script>
 
 <style scoped>
@@ -67,22 +88,22 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 20px 0;
   transition: all 0.35s ease;
 }
 
 .navbar.scrolled {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 12px 0;
-  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+  background: white;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .nav-inner {
   display: flex;
   align-items: center;
   gap: 24px;
+  width: 100%;
+  padding-right: 5%;
 }
 
 .nav-logo {
@@ -91,14 +112,19 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
   gap: 12px;
   color: var(--gray-800);
   flex-shrink: 0;
+  background-color: transparent;
+  background-image: url("/logo-bg.png");
+  background-size: contain;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding: 10px 80px 10px 40px;
+  min-width: 380px;
 }
 
 .nav-logo-img {
   height: 48px;
   width: auto;
   object-fit: contain;
-  /* Convert white SVG to #EC4D11 permanently */
-  filter: brightness(0) invert(36%) sepia(50%) saturate(5460%) hue-rotate(351deg) brightness(97%) contrast(92%);
 }
 
 .nav-links {
@@ -117,19 +143,26 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 }
 
 .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -4px;
-  left: 0; right: 0;
+  left: 0;
+  right: 0;
   height: 2px;
-  background: var(--accent);
+  background: var(--primary);
   transform: scaleX(0);
   transition: transform 0.2s;
   border-radius: 2px;
 }
 
-.nav-link:hover { color: var(--gray-800); }
-.nav-link:hover::after { transform: scaleX(1); }
+.nav-link:hover,
+.nav-link.router-link-exact-active {
+  color: var(--primary);
+}
+.nav-link:hover::after,
+.nav-link.router-link-exact-active::after {
+  transform: scaleX(1);
+}
 
 .btn-cta {
   background: var(--primary);
@@ -146,7 +179,7 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 .btn-cta:hover {
   background: var(--accent);
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(239,136,7,0.5);
+  box-shadow: 0 4px 20px rgba(239, 136, 7, 0.5);
 }
 
 /* Hamburger */
@@ -170,9 +203,15 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
   transition: all 0.3s;
 }
 
-.bar:nth-child(1).open { transform: translateY(7px) rotate(45deg); }
-.bar:nth-child(2).open { opacity: 0; }
-.bar:nth-child(3).open { transform: translateY(-7px) rotate(-45deg); }
+.bar:nth-child(1).open {
+  transform: translateY(7px) rotate(45deg);
+}
+.bar:nth-child(2).open {
+  opacity: 0;
+}
+.bar:nth-child(3).open {
+  transform: translateY(-7px) rotate(-45deg);
+}
 
 /* Mobile menu */
 .mobile-menu {
@@ -202,11 +241,21 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
   transition: color 0.2s;
 }
 
-.mobile-link:hover { color: var(--accent); }
+.mobile-link:hover,
+.mobile-link.router-link-exact-active {
+  color: var(--primary);
+}
 
 @media (max-width: 860px) {
-  .nav-links, .btn-cta { display: none; }
-  .menu-toggle { display: flex; }
-  .mobile-menu { display: flex; }
+  .nav-links,
+  .btn-cta {
+    display: none;
+  }
+  .menu-toggle {
+    display: flex;
+  }
+  .mobile-menu {
+    display: flex;
+  }
 }
 </style>

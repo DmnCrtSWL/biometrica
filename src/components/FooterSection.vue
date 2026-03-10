@@ -6,7 +6,7 @@
         <!-- Brand -->
         <div class="footer-brand">
           <div class="footer-logo">
-            <img src="/logo.svg" alt="BME Biométrica Especializada" class="footer-logo-img" />
+            <img src="/logo.png" alt="BME Biomédica Especializada" class="footer-logo-img" />
           </div>
           <p class="brand-desc">
             Soluciones biomédicas de alta precisión para profesionales de la salud.
@@ -43,7 +43,7 @@
       </div>
 
       <div class="footer-bottom">
-        <p>&copy; {{ year }} BME - Biométrica Especializada. Todos los derechos reservados.</p>
+        <p>&copy; {{ year }} BME - Biomédica Especializada. Todos los derechos reservados.</p>
         <div class="footer-bottom-links">
           <a href="#">Aviso de Privacidad</a>
           <a href="#">Términos de Uso</a>

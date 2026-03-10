@@ -1,95 +1,73 @@
 <template>
-  <section id="inicio" class="hero">
+  <section id="inicio" class="hero" @mousemove="handleMouseMove">
     <!-- Background layers -->
     <div class="hero-bg">
       <div class="hero-gradient"></div>
-      <div class="hero-grid"></div>
+      <div class="hero-grid" :style="{ '--mouse-x': mouseX + '%', '--mouse-y': mouseY + '%' }"></div>
       <div class="hero-particles">
         <span v-for="n in 20" :key="n" class="particle" :style="particleStyle(n)"></span>
       </div>
     </div>
 
     <div class="container hero-content">
-      <div class="hero-text animate-fade-up">
-        <div class="hero-badge">
-          <span class="badge-dot"></span>
-          Tecnología de Diagnóstico de Vanguardia
-        </div>
+      <Transition name="swap" mode="out-in" appear>
+        <div class="hero-text" :key="currentProduct.id">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            {{ currentProduct.badge }}
+          </div>
 
-        <h1 class="hero-title">
-          Equipos Clínicos<br>
-          <span class="title-accent">de Alta Precisión</span><br>
-          para Profesionales
-        </h1>
+          <h1 class="hero-title">
+            {{ currentProduct.name }}<br>
+            <span class="title-accent">{{ currentProduct.accent }}</span>
+          </h1>
 
-        <p class="hero-subtitle">
-          En BME desarrollamos y distribuimos tecnología biomédica especializada
-          para clínicas, hospitales y laboratorios. Precisión, calidad y respaldo técnico en cada equipo.
-        </p>
+          <p class="hero-subtitle">
+            {{ currentProduct.desc }}
+          </p>
 
-        <div class="hero-actions delay-3 animate-fade-up">
-          <a href="#productos" class="btn-primary">
-            Ver Catálogo
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
-          </a>
-          <a href="#contacto" class="btn-outline">
-            Solicitar Demo
-          </a>
-        </div>
+          <div class="hero-actions">
+            <a href="#tienda" class="btn-primary">
+              COMPRAR
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+            </a>
+          </div>
 
-        <div class="hero-stats delay-4 animate-fade-up">
-          <div v-for="stat in stats" :key="stat.label" class="stat-item">
-            <span class="stat-value">{{ stat.value }}</span>
-            <span class="stat-label">{{ stat.label }}</span>
+          <div class="hero-stats">
+            <div v-for="stat in currentProduct.stats" :key="stat.label" class="stat-item">
+              <span class="stat-value">{{ stat.value }}</span>
+              <span class="stat-label">{{ stat.label }}</span>
+            </div>
           </div>
         </div>
-      </div>
+      </Transition>
 
-      <div class="hero-visual delay-2 animate-fade-up">
-        <div class="visual-card main-card">
-          <div class="card-header">
-            <div class="header-dots">
-              <span></span><span></span><span></span>
-            </div>
-            <span class="card-title-text">Monitor de Signos Vitales</span>
-          </div>
-          <div class="monitor-display">
-            <div class="vital-row">
-              <div class="vital-item">
-                <svg class="vital-icon heart" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                <span class="vital-value">76</span>
-                <span class="vital-unit">bpm</span>
-              </div>
-              <div class="vital-item">
-                <svg class="vital-icon bp" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                <span class="vital-value">120/80</span>
-                <span class="vital-unit">mmHg</span>
-              </div>
-              <div class="vital-item">
-                <svg class="vital-icon spo2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
-                <span class="vital-value">98%</span>
-                <span class="vital-unit">SpO₂</span>
-              </div>
-            </div>
-            <div class="ecg-line">
-              <svg viewBox="0 0 300 60" preserveAspectRatio="none">
-                <polyline points="0,30 30,30 45,30 55,5 65,55 75,30 120,30 150,30 165,30 175,5 185,55 195,30 240,30 270,30 285,30 295,5 300,30"
-                  fill="none" stroke="#EF8807" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <Transition name="swap" mode="out-in" appear>
+        <div class="hero-visual" :key="currentProduct.id">
+          <div class="product-showcase">
+            <!-- Fondo hexagonal de marca -->
+            <div 
+              class="product-hexagon" 
+              :style="{ transform: `translate(${(mouseX - 50) * -0.6}px, ${(mouseY - 50) * -0.6}px)` }"
+            >
+              <svg viewBox="0 0 100 100" fill="var(--primary)" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="50,0 93.3,25 93.3,75 50,100 6.7,75 6.7,25" />
               </svg>
             </div>
+            <img :src="currentProduct.image" :alt="currentProduct.name" class="product-hero-img" :style="currentProduct.imageStyle" />
+          </div>
+
+          <!-- Floating badges -->
+          <div class="floating-badge badge-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>{{ currentProduct.badgeLeft }}</span>
+          </div>
+          <div class="floating-badge badge-right">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#fbbf24" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>{{ currentProduct.badgeRight }}</span>
           </div>
         </div>
-
-        <!-- Floating badges -->
-        <div class="floating-badge badge-left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Certificado ISO 13485</span>
-        </div>
-        <div class="floating-badge badge-right">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#fbbf24" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <span>Top Certificación FDA</span>
-        </div>
-      </div>
+      </Transition>
     </div>
 
     <!-- Scroll indicator -->
@@ -103,12 +81,63 @@
 </template>
 
 <script setup>
-const stats = [
-  { value: '+500', label: 'Equipos Instalados' },
-  { value: '15+',  label: 'Años de Experiencia' },
-  { value: '98%',  label: 'Satisfacción' },
-  { value: '24/7', label: 'Soporte Técnico' },
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+
+const mouseX = ref(50)
+const mouseY = ref(50)
+
+const handleMouseMove = (e) => {
+  const rect = e.currentTarget.getBoundingClientRect()
+  mouseX.value = ((e.clientX - rect.left) / rect.width) * 100
+  mouseY.value = ((e.clientY - rect.top) / rect.height) * 100
+}
+
+const products = [
+  {
+    id: 'canis',
+    badge: 'Producto Estrella',
+    name: 'Canis 5c',
+    accent: '5KW de Potencia',
+    desc: 'Sistema de diagnóstico avanzado con arquitectura de procesamiento de señales en tiempo real y componentes de alta frecuencia. Diseñado para ofrecer un rendimiento ininterrumpido y resultados de máxima fidelidad en entornos clínicos exigentes.',
+    image: '/canis.png',
+    imageStyle: { transform: 'scale(1)' },
+    badgeLeft: 'Alta Precisión',
+    badgeRight: 'Garantía de 12 Meses',
+    stats: [
+      { value: '+99%', label: 'Precisión Clínica' },
+      { value: 'Última',  label: 'Generación' }
+    ]
+  },
+  {
+    id: 'carestream',
+    badge: 'Nuevo Ingreso',
+    name: 'Carestream CS',
+    accent: 'Escáner Intraoral Ultraligero',
+    desc: 'El escáner de impresiones digitales con tecnología de sensores avanzada. Disfruta de captura de alta velocidad, detección automática de color y conectividad inalámbrica para elevar tu clínica dental al siguiente nivel.',
+    image: '/carestream.png',
+    imageStyle: { transform: 'scale(0.6)' },
+    badgeLeft: 'Flujo Inalámbrico',
+    badgeRight: 'Escaneo Veloz',
+    stats: [
+      { value: '240g', label: 'Ultraligero' },
+      { value: '30s',  label: 'Jaw Scan' }
+    ]
+  }
 ]
+
+const currentIndex = ref(0)
+const currentProduct = computed(() => products[currentIndex.value])
+
+let intervalTimer = null
+onMounted(() => {
+  intervalTimer = setInterval(() => {
+    currentIndex.value = (currentIndex.value + 1) % products.length
+  }, 7000) // Animación ciclada cada 7 segundos para permitir lectura
+})
+
+onUnmounted(() => {
+  if (intervalTimer) clearInterval(intervalTimer)
+})
 
 const particleStyle = (n) => {
   const x = (n * 37 + 11) % 100
@@ -128,6 +157,20 @@ const particleStyle = (n) => {
 </script>
 
 <style scoped>
+/* Transition effects */
+.swap-enter-active,
+.swap-leave-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.swap-enter-from {
+  opacity: 0;
+  transform: translateY(15px);
+}
+.swap-leave-to {
+  opacity: 0;
+  transform: translateY(-15px);
+}
+
 .hero {
   position: relative;
   min-height: 100vh;
@@ -155,10 +198,12 @@ const particleStyle = (n) => {
 .hero-grid {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(239,136,7,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(239,136,7,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
+  background-image: url("data:image/svg+xml,%3Csvg width='51.96' height='90' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 15L25.98 30L51.96 15M25.98 30v30M0 75l25.98-15 25.98 15M0 75v15M0 0v15M51.96 75v15M51.96 0v15' fill='none' stroke='%23EC4D11' stroke-width='2' stroke-opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 51.96px 90px;
+  -webkit-mask-image: radial-gradient(circle 100vw at var(--mouse-x) var(--mouse-y), transparent 50%, rgba(0, 0, 0, 0.5) 90%);
+  mask-image: radial-gradient(circle 100vw at var(--mouse-x) var(--mouse-y), transparent 50%, rgba(0, 0, 0, 0.5) 90%);
+  transition: --mouse-x 0.1s, --mouse-y 0.1s;
+  pointer-events: none; /* Asegura que el entramado no interfiera con otros clics/hovers */
 }
 
 .particle {
@@ -214,10 +259,7 @@ const particleStyle = (n) => {
 }
 
 .title-accent {
-  background: linear-gradient(90deg, var(--accent), #7FFFD4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ec4d11;
 }
 
 .hero-subtitle {
@@ -265,70 +307,44 @@ const particleStyle = (n) => {
 /* Visual Side */
 .hero-visual {
   position: relative;
-}
-
-.main-card {
-  background: var(--white);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  animation: float 6s ease-in-out infinite;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4), var(--shadow-glow);
-}
-
-.card-header {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
-  padding: 16px 20px;
-  background: var(--gray-100);
-  border-bottom: 1px solid var(--gray-200);
 }
 
-.header-dots { display: flex; gap: 6px; }
-.header-dots span {
-  width: 10px; height: 10px; border-radius: 50%;
-}
-.header-dots span:nth-child(1) { background: #ff5f57; }
-.header-dots span:nth-child(2) { background: #febc2e; }
-.header-dots span:nth-child(3) { background: #28c840; }
-
-.card-title-text { font-size: 0.82rem; font-weight: 600; color: var(--gray-600); }
-
-.monitor-display { padding: 24px 20px; }
-
-.vital-row {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-}
-
-.vital-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.vital-icon { margin-bottom: 2px; }
-.vital-icon.heart { color: #ff6b6b; }
-.vital-icon.bp { color: var(--accent); }
-.vital-icon.spo2 { color: #7FFFD4; }
-
-.vital-value { font-size: 1.4rem; font-weight: 800; color: var(--gray-800); }
-.vital-unit { font-size: 0.7rem; color: var(--gray-500); }
-
-.ecg-line {
+.product-showcase {
+  position: relative;
+  z-index: 2;
   width: 100%;
-  height: 60px;
-  background: rgba(239,136,7,0.04);
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(239,136,7,0.1);
+  max-width: 480px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.ecg-line svg { width: 100%; height: 100%; }
+.product-hexagon {
+  position: absolute;
+  width: 85%;
+  height: auto;
+  z-index: -1;
+  opacity: 0.15; /* Un tono suave para que no compita agresivamente con la fotografía */
+  transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Suavizado en el seguimiento del cursor */
+}
+
+.product-hexagon svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.product-hero-img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  /* Glow o sombra eliminada según petición */
+  animation: float 6s ease-in-out infinite;
+  z-index: 2;
+}
 
 /* Floating badges */
 .floating-badge {
@@ -343,10 +359,11 @@ const particleStyle = (n) => {
   padding: 10px 16px;
   border-radius: 100px;
   box-shadow: var(--shadow-lg);
+  z-index: 3;
 }
 
-.badge-left  { bottom: -16px; left: -20px; animation: float 5s ease-in-out infinite; }
-.badge-right { top: -16px; right: -20px; animation: float 7s ease-in-out infinite 1s; }
+.badge-left  { bottom: 10%; left: -5%; animation: float 5s ease-in-out infinite; }
+.badge-right { top: 15%; right: -5%; animation: float 7s ease-in-out infinite 1s; }
 
 /* Scroll hint */
 .scroll-hint {

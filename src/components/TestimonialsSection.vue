@@ -142,9 +142,9 @@ blockquote {
 
 .avatar {
   width: 44px;
-  height: 44px;
+  height: 48px; /* Ajuste ligeramente la altura para que el hexágono luzca proporcionado */
   background: linear-gradient(135deg, var(--primary), var(--accent));
-  border-radius: 50%;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   display: flex;
   align-items: center;
   justify-content: center;
